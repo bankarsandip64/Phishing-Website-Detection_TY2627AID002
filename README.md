@@ -169,8 +169,4 @@ The best-performing model was selected for final evaluation on the held-out test
 
 ---
 
-## Model Performance
 
-The following results were obtained on the held-out test dataset containing 2,211 samples.
-
-### Model
