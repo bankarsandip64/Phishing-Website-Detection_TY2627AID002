@@ -6,9 +6,7 @@ A machine learning-based phishing website detection system that classifies websi
 
 ## Overview
 
-Phishing attacks use fraudulent websites that imitate trusted organizations, banks, cloud platforms, and e-commerce services to steal sensitive information such as passwords, payment details, and personal data.
-
-This project applies machine learning techniques to identify suspicious website characteristics and predict potential phishing activity.
+Phishing attacks use fraudulent websites that imitate trusted organizations, banks, cloud platforms, and e-commerce services to steal sensitive information such as passwords, payment details, and personal data. This project applies machine learning techniques to identify suspicious website characteristics and predict potential phishing activity.
 
 **Key Objectives:**
 - Detect potentially phishing websites using machine learning.
@@ -50,13 +48,10 @@ This project applies machine learning techniques to identify suspicious website 
 
 ## Dataset
 
-**Source:** [UCI Machine Learning Repository – Phishing Websites Dataset](https://archive.ics.uci.edu/ml/datasets/phishing+websites)
-
+**Source:** [UCI Machine Learning Repository – Phishing Websites Dataset](https://archive.ics.uci.edu/ml/datasets/phishing+websites)  
 **Original Research:** Rami, McCluskey, and Thabtah (2015).
 
-The dataset is stored locally at:
-
-`data/phishing_websites.csv`
+The dataset is stored locally at: `data/phishing_websites.csv`
 
 ### Dataset Information
 
@@ -111,12 +106,10 @@ The dataset contains 30 integer-encoded features representing different website 
 ### Target Variable
 
 The original dataset uses:
-
 - `-1` = Phishing
 - `1` = Legitimate
 
 For model training, the target is converted into:
-
 - `1` = Phishing
 - `0` = Legitimate
 
@@ -125,9 +118,7 @@ This mapping is implemented in `src/preprocessing.py`.
 ### Dataset Limitations
 
 1. **Historical Dataset:** The dataset originates from 2015. Modern phishing websites may use valid HTTPS certificates, making some historical security indicators less reliable today.
-
 2. **Discretized Features:** All 30 features are encoded using values `-1`, `0`, and `1`. This can result in identical feature vectors for different websites.
-
 3. **No Raw URL Text:** The original dataset provides pre-extracted numerical features rather than raw website URLs or HTML pages. Therefore, the trained model's reported performance applies to these dataset features and does not establish real-world URL detection performance on arbitrary unseen URLs.
 
 ---
@@ -139,7 +130,6 @@ The project follows a structured machine learning pipeline.
 ### 1. Data Preprocessing
 
 Implemented in `src/preprocessing.py`.
-
 - Remove ID-like and constant columns.
 - Handle missing values using `SimpleImputer`.
 - Remove zero-variance features using `VarianceThreshold`.
@@ -171,9 +161,7 @@ Four machine learning approaches were evaluated:
 
 ### 4. Model Selection
 
-Hyperparameters were selected using the validation dataset.
-
-The selection criteria were:
+Hyperparameters were selected using the validation dataset. The selection criteria were:
 - Primary metric: F1-score
 - Tie-breaking metric: ROC-AUC
 
@@ -185,248 +173,4 @@ The best-performing model was selected for final evaluation on the held-out test
 
 The following results were obtained on the held-out test dataset containing 2,211 samples.
 
-### Model Comparison
-
-| Model | Precision | Recall | F1-Score | ROC-AUC | PR-AUC | Accuracy |
-|---|---:|---:|---:|---:|---:|---:|
-| **SVM (Best)** | **0.9658** | 0.9530 | **0.9594** | **0.9909** | **0.9868** | **0.9643** |
-| Decision Tree | 0.9408 | 0.9571 | 0.9489 | 0.9673 | 0.9461 | 0.9543 |
-| Logistic Regression | 0.9318 | 0.9070 | 0.9193 | 0.9775 | 0.9745 | 0.9294 |
-| Naive Bayes | 0.7494 | **0.9683** | 0.8449 | 0.9658 | 0.9593 | 0.8426 |
-
-### Best Model: Support Vector Machine
-
-The SVM model with the following hyperparameters achieved the best F1-score on the validation dataset:
-
-- `C = 10.0`
-- `kernel = 'rbf'`
-- `gamma = 'scale'`
-
-**Test Performance:**
-- Accuracy: 96.43%
-- Precision: 96.58%
-- Recall: 95.30%
-- F1-score: 95.94%
-- ROC-AUC: 99.09%
-- PR-AUC: 98.68%
-
-These results represent performance on the held-out dataset, not a guarantee of performance against current real-world phishing websites.
-
----
-
-## Error Analysis
-
-The selected SVM model was further evaluated to understand its classification errors.
-
-### Test Set Results
-
-| Error Type | Count | Rate |
-|---|---:|---:|
-| False Positives | 33 | 2.68% |
-| False Negatives | 46 | 4.70% |
-
-**False Positive:** A legitimate website incorrectly classified as phishing.
-
-**False Negative:** A phishing website incorrectly classified as legitimate.
-
-### Key Observations
-
-- False positives can occur when legitimate websites have suspicious-looking characteristics, such as unusual domain structures or weak SSL indicators.
-- False negatives can occur when phishing websites imitate legitimate infrastructure, use HTTPS certificates, and exhibit normal-looking website characteristics.
-- Naive Bayes achieved the highest recall (96.83%) but generated 317 false positives, demonstrating why accuracy and recall should not be evaluated independently.
-
----
-
-## Project Visualizations
-
-The following evaluation plots are generated and stored in `artifacts/plots/`.
-
-| Visualization | Description |
-|---|---|
-| `model_comparison.png` | Comparison of classification algorithms |
-| `roc_pr_curves.png` | ROC and Precision-Recall curves |
-| `confusion_matrices.png` | Classification error analysis |
-| `error_analysis_and_importance.png` | Error analysis and feature importance |
-
-These visualizations help understand model performance and identify areas where classification errors occur.
-
----
-
-## Project Structure
-
-```text
-Phishing-Website-Detection/
-│
-├── app.py
-│
-├── data/
-│   └── phishing_websites.csv
-│
-├── notebooks/
-│   └── 01_exploratory_and_modeling.ipynb
-│
-├── src/
-│   ├── __init__.py
-│   ├── data_loader.py
-│   ├── preprocessing.py
-│   └── train_evaluate.py
-│
-├── artifacts/
-│   ├── models/
-│   │   ├── all_models.joblib
-│   │   └── best_model.joblib
-│   │
-│   ├── plots/
-│   │   ├── model_comparison.png
-│   │   ├── roc_pr_curves.png
-│   │   ├── confusion_matrices.png
-│   │   └── error_analysis_and_importance.png
-│   │
-│   └── metrics_summary.json
-│
-├── tests/
-│   └── test_pipeline.py
-│
-├── requirements.txt
-├── .gitignore
-└── README.md
-```
-
----
-
-## Installation and Setup
-
-Follow these instructions to run the project locally.
-
-### Prerequisites
-
-- Python 3.9 or later
-- Git
-- VS Code or another Python IDE
-
-### Step 1: Clone the Repository
-
-```bash
-git clone https://github.com/bankarsandip64/Phishing-Website-Detection.git
-```
-
-### Step 2: Navigate to the Project Directory
-
-```bash
-cd Phishing-Website-Detection
-```
-
-### Step 3: Create a Virtual Environment
-
-```bash
-python -m venv venv
-```
-
-Activate it on Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-### Step 4: Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 5: Train and Evaluate Models
-
-```bash
-python -m src.train_evaluate
-```
-
-This executes the training and evaluation pipeline, compares the four algorithms, and saves the generated models, evaluation metrics, and plots in the `artifacts/` directory.
-
-### Step 6: Launch the Streamlit Application
-
-```bash
-streamlit run app.py
-```
-
-The application will open in your browser, usually at:
-
-```text
-http://localhost:8501
-```
-
-### Step 7: Run Automated Tests
-
-```bash
-pytest -v
-```
-
-### Step 8: Explore the Jupyter Notebook
-
-Open:
-
-```text
-notebooks/01_exploratory_and_modeling.ipynb
-```
-
-Run it using Jupyter Notebook or the VS Code Jupyter extension.
-
----
-
-## Future Improvements
-
-Potential improvements to extend this project include:
-
-- Use updated phishing datasets containing recent attack patterns.
-- Integrate real-time URL feature extraction.
-- Add domain age and WHOIS information retrieval.
-- Analyze webpage HTML and JavaScript behavior.
-- Introduce threat intelligence and blacklist integrations.
-- Evaluate additional algorithms such as Random Forest and XGBoost.
-- Implement continuous model evaluation and retraining.
-- Improve explainability using SHAP or feature-level risk explanations.
-- Deploy the application using Streamlit Community Cloud or another hosting platform.
-
----
-
-## Ethical Considerations and Responsible Use
-
-This project is designed as a machine learning decision-support prototype, not a standalone security solution.
-
-**1. Human Oversight:** Predictions should be reviewed before blocking websites or taking security actions.
-
-**2. Fairness:** New domains and small legitimate businesses may exhibit characteristics that resemble phishing websites.
-
-**3. Privacy:** Real-world URL analysis should avoid unnecessarily storing sensitive URL parameters, authentication tokens, or personal information.
-
-**4. Adversarial Adaptation:** Phishing attackers continuously modify their techniques. Models require updated data and periodic evaluation to remain useful.
-
-**5. Model Limitations:** High test accuracy does not guarantee reliable detection of previously unseen or modern phishing attacks.
-
----
-
-## References
-
-1. [UCI Machine Learning Repository – Phishing Websites Dataset](https://archive.ics.uci.edu/ml/datasets/phishing+websites)
-2. [Scikit-learn Documentation](https://scikit-learn.org/stable/)
-3. [Streamlit Documentation](https://docs.streamlit.io/)
-4. Rami, McCluskey, and Thabtah (2015) – Phishing Websites Dataset.
-
----
-
-## Author
-
-**Sandip Bankar**
-
-GitHub: [@bankarsandip64](https://github.com/bankarsandip64)
-
----
-
-## License
-
-This project is intended for educational and research purposes. Check the original dataset's licensing and usage terms before redistribution or commercial deployment.
-
----
-
-**Disclaimer:** This machine learning system provides predictions based on learned patterns in historical data. It should not be treated as a guarantee that a website is safe or malicious.
- 
- 
+### Model
